@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendaftaran Murid Baru - Tahun Ajaran 2026/2027</title>
+    
+    <style>
+        /* Reset Dasar */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-family: 'arial', 'Helvetica', sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #374151;
+            line-height: 1.6;
+            overflow-x: hidden; /* Mencegah overflow horizontal saat animasi berjalan */
+        }
+
+        /* ==========================================================================
+           KEYFRAMES ANIMASI (MURNI CSS)
+           ========================================================================== */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+
+        /* ==========================================================================
+           SISTEM ANIMASI BERDASARKAN SCROLL
+           ========================================================================== */
+        .animate-on-scroll {
+            opacity: 0;
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            will-change: transform, opacity;
+        }
+
+        /* Navigasi langsung muncul */
+        .navbar {
+            animation: fadeInDown 0.6s ease-out forwards;
+        }
+
+        /* Hero Section langsung berjalan otomatis saat load */
+        .hero-tag { animation: fadeInUp 0.6s ease-out 0.1s forwards; }
+        .hero h1 { animation: fadeInUp 0.6s ease-out 0.2s forwards; }
+        .hero p { animation: fadeInUp 0.6s ease-out 0.3s forwards; }
+        .hero-buttons { animation: fadeInUp 0.6s ease-out 0.4s forwards; }
+
+        /* Trigger Kelas via JavaScript */
+        .is-visible.fade-in-up {
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .is-visible.fade-in-left {
+            animation: fadeInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .is-visible.fade-in-right {
+            animation: fadeInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Efek Staggered (Berurutan) untuk Card Alur */
+        .is-visible.alur-card:nth-child(1) { animation-delay: 0.1s; }
+        .is-visible.alur-card:nth-child(2) { animation-delay: 0.3s; }
+        .is-visible.alur-card:nth-child(3) { animation-delay: 0.5s; }
+
+        /* Hover Effect Tambahan pada Form Input */
+        input:focus {
+            transform: translateY(-1px);
+        }
+
+        /* Navigasi / Header */
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            padding: 15px 20px;
+        }
+
+        .nav-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #4338ca;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--dark-text);
+            font-weight: 600;
+            font-size: 16px;
+            transition: color 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 25px;
+            padding: 8px 12px;
+            border-radius: 25px;
+            transition: color 0.2s;
+        }
+
+        .nav-menu a:hover {
+            color: #4338ca;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-nav-daftar {
+            background-color: #4338ca;
+            color: #ffffff;
+            padding: 8px 20px;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .btn-nav-daftar:hover {
+            background-color: #4338ca;
+            transform: scale(1.05);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #4338ca 0%, #6916a0 85%);
+            color: #ffffff;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .hero-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-tag {
+            /* background-color: rgba(79, 70, 229, 0.3); */
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            display: inline-block;
+            margin-bottom: 20px;
+            opacity: 0;
+        }
+
+        .hero h1, .hero p, .hero-buttons {
+            opacity: 0;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 24px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: rgba(224, 231, 255, 0.8);
+            margin-bottom: 32px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            /* background-color: #10b981; */
+            color: #ffffff;
+            padding: 12px 32px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: background-color 0.2s, transform 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 12px 32px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Sektor Section Umum */
+        .section-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .section-center {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .section-subtitle {
+            color: #6b7280;
+            margin-top: 8px;
+        }
+
+        /* Alur Kartu */
+        .alur-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 32px;
+        }
+
+        .alur-card {
+            background-color: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #f3f4f6;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .alur-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        .alur-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: rgba(79, 70, 229, 0.15);
+            position: absolute;
+            top: 16px;
+            right: 16px;
+        }
+
+        .alur-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #111827;
+        }
+
+        .alur-card p {
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+        /* Syarat & Jadwal */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 48px;
+        }
+
+        .info-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-title::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 24px;
+            background-color: #4338ca;
+            border-radius: 9999px;
+        }
+
+        .syarat-list {
+            list-style: none;
+        }
+
+        .syarat-item {
+            background-color: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #f3f4f6;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+            font-size: 14px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .syarat-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .check-icon {
+            color: #4338ca;
+            font-weight: bold;
+        }
+
+        /* Garis Waktu / Jadwal */
+        .timeline {
+            border-left: 2px solid #e5e7eb;
+            padding-left: 16px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -21px;
+            top: 4px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #4338ca;
+            box-shadow: 0 0 0 4px #e0e7ff;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            font-weight: 700;
+            color: #4338ca;
+        }
+
+        .timeline-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        /* Tabel Biaya */
+        .bg-biaya {
+            background-color: #f3f4f6;
+        }
+
+        .table-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #4338ca;
+            color: #ffffff;
+            padding: 16px;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .row-total {
+            background-color: rgba(243, 244, 246, 0.7);
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .row-total td:last-child {
+            color: #088b3a;
+        }
+
+        .biaya-note {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        /* Formulir */
+        .form-container {
+            max-width: 550px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f3f4f6;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-row, .form-row-2, .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-row-3 {
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        }
+
+        .form-row-all {
+            background-color: #f5f3ff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary-indigo);
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #4b5563;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="tel"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+        }
+
+        input:focus {
+            border-color: #0A5C36;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 6px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            text-transform: none;
+            font-weight: normal;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .box-jenjang, .box-dokumen {
+            background-color: #f5f3ff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary-indigo);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: #4338ca;
+            color: #ffffff;
+            font-weight: 700;
+            padding: 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.2s, transform 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            background-color: #04bd14;
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #0f172a;
+            color: #9ca3af;
+            padding: 48px 20px 24px 20px;
+            font-size: 14px;
+        }
+
+        .footer-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+        }
+
+        footer h4 {
+            color: #ffffff;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .footer-copyright {
+            max-width: 1100px;
+            margin: 48px auto 0 auto;
+            text-align: center;
+            font-size: 12px;
+            padding-top: 24px;
+            border-top: 1px solid #1e293b;
+        }
+
+        /* Responsif HP Layar Kecil */
+        @media (max-width: 640px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 16px;
+            }
+            .nav-menu {
+                gap: 16px;
+            }
+            .form-row, .form-row-2, .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+            /* Mencegah animasi terlalu agresif di mobile */
+            .animate-on-scroll {
+                transform: none !important;
+            }
+        }
+        
+        /* Kotak Khusus Berkas Dokumen */
+        .box-dokumen {
+            background-color: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        .box-dokumen-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1e293b;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo-section">
+                <span class="logo-text">Murangsanah Education Center</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html">Beranda</a>
+                <!-- <a href="smp.html">SMP</a>
+                <a href="ma.html">MA</a> -->
+                <a href="#alur">Alur</a>
+                <a href="#syarat">Syarat</a>
+                <a href="#biaya">Biaya</a>
+                <a href="#jadwal">Jadwal</a>
+            </div>
+            <a href="#daftar" class="btn-nav-daftar">Daftar Sekarang</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-container">
+            <span class="hero-tag">Sistem Penerimaan Murid Baru</span>
+            <h1>Mulai Masa Depan Cerah Bersama Kami</h1>
+            <p>Pendaftaran Peserta Didik Baru Tahun Ajaran 2026-2027 telah dibuka.</p>
+            <div class="hero-buttons">
+                <a href="#daftar" class="btn-primary">Isi Formulir Pendaftaran</a>
+                <a href="#alur" class="btn-secondary">Lihat Panduan</a>
+            </div>
+        </div>
+    </header>
+
+    <section id="alur" class="section-container">
+        <div class="section-center animate-on-scroll fade-in-up">
+            <h2 class="section-title">Alur Pendaftaran</h2>
+            <p class="section-subtitle">3 Langkah mudah menjadi bagian dari sekolah kami</p>
+        </div>
+        <div class="alur-grid">
+            <div class="alur-card animate-on-scroll fade-in-up">
+                <div class="alur-number">01</div>
+                <h3>Isi Data Diri</h3>
+                <p>Isi data diri singkat pada formulir online yang tersedia di bawah.</p>
+            </div>
+            <div class="alur-card animate-on-scroll fade-in-up">
+                <div class="alur-number">02</div>
+                <h3>Upload Berkas</h3>
+                <p>Unggah kelengkapan administrasi seperti Akta Kelahiran dan KK.</p>
+            </div>
+            <div class="alur-card animate-on-scroll fade-in-up">
+                <div class="alur-number">03</div>
+                <h3>Kirim</h3>
+                <p>Kirim formulir dan berkas yang telah diunggah.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-container info-grid">
+        <div id="syarat" class="animate-on-scroll fade-in-left">
+            <h2 class="info-title">Persyaratan Dokumen</h2>
+            <ul class="syarat-list">
+                <li class="syarat-item">
+                    <span class="check-icon">✓</span>
+                    <span>Scan Akta Kelahiran (Asli)</span>
+                </li>
+                <li class="syarat-item">
+                    <span class="check-icon">✓</span>
+                    <span>Scan Kartu Keluarga / KK (Asli)</span>
+                </li>
+                <li class="syarat-item">
+                    <span class="check-icon">✓</span>
+                    <span>Scan Ijazah Terakhir</span>
+                </li>
+            </ul>
+        </div>
+
+        <div id="jadwal" class="animate-on-scroll fade-in-right">
+            <h2 class="info-title">Jadwal Penting</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <span class="timeline-date">1 Juni - 30 Juni 2026</span>
+                    <h4 class="timeline-text">Gelombang 1 Pendaftaran Online</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="biaya" class="bg-biaya">
+        <div class="section-container">
+            <div class="section-center animate-on-scroll fade-in-up">
+                <h2 class="section-title">Rincian Biaya</h2>
+                <p class="section-subtitle">Transparansi biaya pendaftaran kami</p>
+            </div>
+            <div class="table-container animate-on-scroll fade-in-up">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Jenis Biaya</th>
+                            <th class="text-right">Nominal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Uang Pendaftaran (Formulir & Tes)</td>
+                            <td class="text-right">Gratis</td>
+                        </tr>
+                        <tr>
+                            <td>Uang Gedung</td>
+                            <td class="text-right">Gratis</td>
+                        </tr>
+                        <tr>
+                            <td>Biaya Seragam</td>
+                            <td class="text-right">Gratis</td>
+                        </tr>
+                        <tr class="row-total">
+                            <td>Total Biaya Masuk Awal</td>
+                            <td class="text-right">0 Rupiah</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="biaya-note animate-on-scroll fade-in-up">*Biaya di atas belum termasuk Biaya Wisuda dan atau Sumbangan Mendadak</p>
+        </div>
+    </section>
+
+    <section id="daftar" class="section-container">
+        <div class="form-container animate-on-scroll fade-in-up">
+            <div class="section-center" style="margin-bottom: 24px;">
+                <h2 class="section-title" style="font-size: 24px;">Formulir Pendaftaran Awal</h2>
+                <p class="section-subtitle" style="font-size: 14px;">Lengkapi data di bawah ini dengan benar</p>
+            </div>
+            
+            <form id="ppdbForm">
+                <div class="form-group">
+                    <label>Nama Lengkap Calon Siswa</label>
+                    <input type="text" name="namaSiswa" required placeholder="Contoh: Budi Santoso">
+                </div>
+
+                <div class="form-group box-jenjang">
+                    <label style="color: #4338ca;">Pilihan Jenjang Pendidikan</label>
+                    <div class="radio-group">
+                        <label class="radio-label" style="font-weight: 600;">
+                            <input type="radio" name="jenjangPendidikan" value="SMP" checked> Sekolah Menengah Pertama (SMP)
+                        </label>
+                        <label class="radio-label" style="font-weight: 600;">
+                            <input type="radio" name="jenjangPendidikan" value="MA"> Madrasah Aliyah (MA)
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tempat Lahir</label>
+                        <input type="text" name="tempatLahir" required placeholder="Bangkalan">
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal Lahir</label>
+                        <input type="date" name="tanggalLahir" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Jenis Kelamin</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="jenisKelamin" value="Laki-laki" checked> Laki-laki
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="jenisKelamin" value="Perempuan"> Perempuan
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nama Orang Tua / Wali</label>
+                    <input type="text" name="namaOrangTua" required placeholder="Nama Ayah / Ibu / Wali">
+                </div>
+                
+                <div class="form-row-all">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Dusun</label>
+                        <input type="text" name="dusun" required placeholder="Nama Dusun / RT / RW">
+                    </div>
+                    <div class="form-group">
+                        <label>Desa</label>
+                        <input type="text" name="desa" required placeholder="Nama Desa / Kelurahan">
+                    </div>
+                </div>
+
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>Kecamatan</label>
+                        <input type="text" name="kecamatan" required placeholder="Kecamatan">
+                    </div>
+                    <div class="form-group">
+                        <label>Kabupaten</label>
+                        <input type="text" name="kabupaten" required placeholder="Kabupaten / Kota">
+                    </div>
+                    <div class="form-group">
+                        <label>Provinsi</label>
+                        <input type="text" name="provinsi" required placeholder="Provinsi">
+                    </div>
+                </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Nomor WhatsApp Aktif</label>
+                    <input type="tel" name="whatsapp" required placeholder="08xxxxxxxxxx">
+                </div>
+
+                <div class="box-dokumen">
+                    <div class="box-dokumen-title">Upload Dokumen Pendukung</div>
+                    
+                    <div class="form-group">
+                        <label>1. Pas Foto Siswa (Format Gambar 3x4)</label>
+                        <input type="file" id="fotoFile" accept="image/*" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>2. File Kartu Keluarga / KK (Gambar)</label>
+                        <input type="file" id="kkFile" accept="image/*,application/pdf" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>3. File Akte Kelahiran (Gambar)</label>
+                        <input type="file" id="akteFile" accept="image/*,application/pdf" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>4. File Ijazah atau Surat Keterangan Lulus (Gambar)</label>
+                        <input type="file" id="ijazahFile" accept="image/*,application/pdf">
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn-submit">Kirim Pendaftaran</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-container">
+            <div>
+                <h4>Murangsanah Education Center</h4>
+                <p>Jl. Bujuk Dangbigih<br>Telp: 08123456789</p>
+            </div>
+            <div>
+                <h4>Kontak Info</h4>
+                <p>Email: murangsanaheducationcenter.com<br>WhatsApp: 08123456789</p>
+            </div>
+            <div>
+                <h4>Jam Operasi</h4>
+                <p>Senin - Jumat: 08.00 - 15.00 WIB</p>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            &copy; 2026 Murangsanah Education Center. All rights reserved.
+        </div>
+    </footer>
+
+     <script>
+        // --- 1. SCRIPT DETEKSI SCROLL UNTUK ANIMASI MURNI ---
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15 // Animasi berjalan saat 15% elemen masuk layar
+        };
+
+        const scrollObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target); // Cukup animasi sekali saja
+                }
+            });
+        }, observerOptions);
+
+        // Daftarkan semua elemen yang ingin dianimasikan saat scroll
+        document.querySelectorAll('.animate-on-scroll').forEach(element => {
+            scrollObserver.observe(element);
+        });
+
+
+        // --- 2. SCRIPT PENGIRIMAN FORM (BAWAAN ANDA) ---
+        const form = document.getElementById('ppdbForm');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbylqJOshK9Rjydz02CWWWR8aOWJlu5L8Y2xAfW8klENKf9Llodv-X58mZse7TlVnmBShA/exec';
+
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Mengonversi berkas & mengirim...';
+
+            try {
+                const formData = new FormData(form);
+                
+                const fFoto = document.getElementById('fotoFile').files[0];
+                const fKK = document.getElementById('kkFile').files[0];
+                const fAkte = document.getElementById('akteFile').files[0];
+                const fIjazah = document.getElementById('ijazahFile').files[0];
+
+                if(fFoto) { formData.append('fotoData', await toBase64(fFoto)); formData.append('fotoName', fFoto.name); }
+                if(fKK)   { formData.append('kkData', await toBase64(fKK)); formData.append('kkName', fKK.name); }
+                if(fAkte) { formData.append('akteData', await toBase64(fAkte)); formData.append('akteName', fAkte.name); }
+                if(fIjazah) { formData.append('ijazahData', await toBase64(fIjazah)); formData.append('ijazahName', fIjazah.name); }
+
+                const response = await fetch(scriptURL, { method: 'POST', body: formData });
+                
+                alert('Selamat! Data pendaftaran jenjang ' + formData.get('jenjangPendidikan') + ' dan seluruh berkas berhasil terkirim.');
+                form.reset();
+            } catch (error) {
+                console.error('Error!', error.message);
+                alert('Gagal mengirim data. Pastikan jaringan stabil dan total ukuran file tidak terlalu besar.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Kirim Pendaftaran';
+            }
+        });
+    </script>
+</body>
+</html>
