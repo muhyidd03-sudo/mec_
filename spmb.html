@@ -673,14 +673,14 @@
 
         @media (max-width: 768px) {
             .menu-toggle {
-                display: flex; /* Memunculkan hamburger di layar HP */
+                display: flex;
             }
 
-            /* Mengubah menu kanan menjadi panel tirai melayang samping */
+            /* --- PERBAIKAN DI SINI --- */
             .nav-right-wrapper {
                 position: fixed;
                 top: 0;
-                right: -100%; 
+                right: 0; /* Set ke 0 agar patokannya pas di layar browser */
                 width: 280px;
                 height: 100vh;
                 background-color: var(--white);
@@ -691,11 +691,17 @@
                 padding: 100px 30px;
                 gap: 35px;
                 transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 999;
+                
+                /* Sembunyikan dengan transform + visibility agar tidak merusak lebar halaman */
+                transform: translateX(100%); 
+                visibility: hidden; 
             }
 
-            /* Kelas aktif memicu menu masuk menggeser ke kiri */
+            /* Saat menu aktif/dibuka */
             .nav-right-wrapper.active {
-                right: 0; 
+                transform: translateX(0); /* Muncul kembali ke posisi semula */
+                visibility: visible;
             }
 
             .nav-menu {
