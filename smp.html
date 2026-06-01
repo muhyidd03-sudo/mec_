@@ -11,6 +11,14 @@
     <header>
         <nav class="navbar">
             <div class="logo"><a href="index.html">MEC</a></div>
+            
+            <!-- Tombol Hamburger Tambahan -->
+            <button class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
             <ul class="nav-links">
                 <li><a href="index.html">Beranda</a></li>
                 <li><a href="smp.html" class="active">SMP</a></li>
@@ -58,5 +66,15 @@
         <p>&copy; 2026 Murangsanah Education Center. All Rights Reserved.</p>
     </footer>
 
+    <!-- Script Hamburger -->
+    <script>
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+    </script>
 </body>
 </html>

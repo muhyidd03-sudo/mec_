@@ -1,95 +1,198 @@
 /* ==========================================================================
-   1. VARIABLES & RESET STYLE
+   VARIABEL UTAMA & RESET GLOBAL (WAJIB AGAR TIDAK GESER)
    ========================================================================== */
 :root {
-    --primary-green: #1b5e20;
-    --secondary-green: #2e7d32;
-    --light-green: #e8f5e9;
-    --dark-text: #2c3e50;
-    --light-bg: #f8f9fa;
+    --primary-green: #088b3a;
+    --dark-text: #374151;
+    --light-bg: #f9fafb;
     --white: #ffffff;
-    --accent-gold: #d4af37;
-    --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-body {
+html, body {
+    width: 100%;
+    overflow-x: hidden; /* Mengunci layar HP agar tidak bisa digeser ke kanan */
+    font-family: 'Segoe UI', Roboto, sans-serif;
     background-color: var(--light-bg);
     color: var(--dark-text);
-    line-height: 1.6;
-    overflow-x: hidden;
 }
 
 /* ==========================================================================
-   2. NAVBAR (RESPONSIVE NAVIGATION)
+   STRUKTUR NAVBAR UTAMA (DEKSTOP)
    ========================================================================== */
 header {
-    background-color: var(--white);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     position: sticky;
     top: 0;
     z-index: 1000;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .navbar {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 15px 20px;
 }
 
 .logo a {
-    font-size: 1.3rem;
-    font-weight: 700;
+    font-weight: 800;
+    font-size: 1.25rem;
     color: var(--primary-green);
     text-decoration: none;
-    transition: var(--transition-smooth);
+    letter-spacing: -0.5px;
 }
 
 .nav-links {
     display: flex;
     align-items: center;
+    gap: 24px;
     list-style: none;
-    gap: 20px;
 }
 
 .nav-links a {
     text-decoration: none;
-    color: #555;
-    font-weight: 500;
-    padding: 8px 12px;
-    border-radius: 5px;
-    transition: var(--transition-smooth);
+    color: #4b5563;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: var(--transition);
+    padding: 6px 0;
 }
 
 .nav-links a:hover, 
 .nav-links a.active {
     color: var(--primary-green);
-    background-color: var(--light-green);
 }
 
-/* Tombol Khusus SPMB */
-.nav-links .btn-spmb {
+/* Tombol SPMB Khusus */
+.nav-links a.btn-spmb {
     background-color: var(--primary-green);
     color: var(--white) !important;
-    border-radius: 25px;
-    padding: 10px 20px;
-    box-shadow: 0 4px 6px rgba(27, 94, 32, 0.2);
+    padding: 10px 24px;
+    border-radius: 9999px;
+    box-shadow: 0 4px 10px rgba(8, 139, 58, 0.2);
 }
 
-.nav-links .btn-spmb:hover {
-    background-color: var(--secondary-green);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(27, 94, 32, 0.3);
+.nav-links a.btn-spmb:hover {
+    background-color: #055f26;
+    transform: scale(1.03);
 }
+
+/* ==========================================================================
+   TOMBOL HAMBURGER (TERSEMBUNYI DI DESKTOP)
+   ========================================================================== */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+.menu-toggle span {
+    width: 100%;
+    height: 3px;
+    background-color: #111827;
+    border-radius: 2px;
+    transition: var(--transition);
+}
+
+/* Efek Animasi Hamburger Menjadi Silang (X) */
+.menu-toggle.active span:nth-child(1) {
+    transform: translateY(7.5px) rotate(45deg);
+}
+.menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+.menu-toggle.active span:nth-child(3) {
+    transform: translateY(-7.5px) rotate(-45deg);
+}
+
+/* ==========================================================================
+   RESPONSIVE LAYOUT (UNTUK HP & TABLET MAKSIMAL 768PX)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: flex; /* Munculkan hamburger di HP */
+    }
+
+    .logo a {
+        font-size: 1.1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 70vw; /* Cegah teks logo menabrak tombol menu */
+    }
+
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 270px;
+        height: 100vh;
+        background-color: var(--white);
+        box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding: 100px 30px;
+        gap: 25px;
+        z-index: 999;
+        
+        /* Sistem semunyi laci menu - Sangat Aman & Anti Bocor */
+        transform: translateX(100%);
+        visibility: hidden;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s;
+    }
+
+    /* Ketika Menu Aktif */
+    .nav-links.active {
+        transform: translateX(0);
+        visibility: visible;
+    }
+
+    .nav-links li {
+        width: 100%;
+    }
+
+    .nav-links a {
+        font-size: 1.1rem;
+        display: block;
+        width: 100%;
+    }
+
+    .nav-links a.btn-spmb {
+        text-align: center;
+        border-radius: 8px;
+        margin-top: 10px;
+    }
+}
+
+/* --- Sisa Style Bawaan Template Kamu --- */
+.hero {
+    background: linear-gradient(135deg, #088b3a 0%, #055f26 100%);
+    color: #fff;
+    padding: 80px 20px;
+    text-align: center;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.card { background: white; padding: 25px; border-radius: 8px; border: 1px solid #e5e7eb; }
+footer { background: #111827; color: #9ca3af; text-align: center; padding: 20px; margin-top: 50px; }
 
 /* ==========================================================================
    3. HERO SECTION WITH ANIMATION
